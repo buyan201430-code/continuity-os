@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ИИ-ОС / Фокус-траектория мысли</title>
+  <style>
+    :root {
+      --bg: #070a0f;
+      --panel: #0c1118;
+      --panel2: #101722;
+      --panel3: #141c28;
+      --line: rgba(255,255,255,.09);
+      --line2: rgba(255,255,255,.16);
+      --text: #e9eef7;
+      --muted: #8994a5;
+      --faint: #596577;
+      --blue: #6da2ff;
+      --cyan: #7bdff2;
+      --orange: #ff9f68;
+      --green: #7ee787;
+      --purple: #c099ff;
+      --red: #ff7777;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(109,162,255,.12), transparent 26%),
+        radial-gradient(circle at 80% 10%, rgba(192,153,255,.08), transparent 25%),
+        linear-gradient(#0a0f16 1px, transparent 1px),
+        linear-gradient(90deg, #0a0f16 1px, transparent 1px),
+        var(--bg);
+      background-size: auto, auto, 44px 44px, 44px 44px, auto;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", sans-serif;
+      letter-spacing: -.02em;
+      overflow: hidden;
+    }
+
+    .page {
+      height: 100vh;
+      padding: 18px;
+      max-width: 1840px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 14px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 780;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mode-note {
+      color: var(--faint);
+      font-size: 12px;
+      text-align: right;
+      max-width: 420px;
+      line-height: 1.45;
+    }
+
+    .stagebar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.025);
+    }
+
+    .stage-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      min-width: 0;
+    }
+
+    .stage-number {
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .stage-title {
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 750;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stage-purpose {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-left: 1px solid var(--line);
+    }
+
+    button {
+      border: 1px solid var(--line2);
+      background: var(--panel2);
+      color: var(--text);
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 760;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    button:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+      margin-left: 4px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 99px;
+      border: 1px solid var(--line2);
+      background: transparent;
+    }
+
+    .dot.active {
+      background: var(--blue);
+      box-shadow: 0 0 14px rgba(109,162,255,.75);
+    }
+
+    .stage {
+      display: none;
+      min-height: 0;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.035), transparent 150px), var(--panel);
+      box-shadow: 0 24px 80px rgba(0,0,0,.42);
+      overflow: hidden;
+    }
+
+    .stage.active {
+      display: block;
+    }
+
+    .window-head {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.02);
+    }
+
+    .window-head b {
+      color: var(--blue);
+      font-size: 15px;
+      font-weight: 760;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .window-head span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .chrome {
+      display: grid;
+      grid-template-columns: 220px 1fr 250px;
+      height: calc(100vh - 172px);
+      min-height: 560px;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: #090d13;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .mark {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .mark .n {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line2);
+      font-weight: 800;
+      border-radius: 4px;
+    }
+
+    .mark strong {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .mark small {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .search {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      color: var(--faint);
+      font-size: 12px;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .nav-title {
+      color: var(--faint);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin: 18px 0 8px;
+    }
+
+    .nav div {
+      padding: 8px 9px;
+      color: var(--muted);
+      font-size: 13px;
+      border-radius: 4px;
+      margin-bottom: 3px;
+    }
+
+    .nav .active {
+      color: var(--text);
+      background: rgba(109,162,255,.12);
+      border: 1px solid var(--line);
+    }
+
+    .profile {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .orb {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #fff, var(--blue) 34%, transparent 70%);
+      box-shadow: 0 0 28px rgba(109,162,255,.5);
+    }
+
+    .profile b {
+      display: block;
+      font-size: 12px;
+    }
+
+    .profile span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .content {
+      padding: 32px 40px;
+      position: relative;
+      overflow: auto;
+    }
+
+    .crumb {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 28px;
+    }
+
+    .date {
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: clamp(34px, 4vw, 58px);
+      line-height: .96;
+      letter-spacing: -.065em;
+      max-width: 920px;
+    }
+
+    h3 {
+      margin: 0 0 14px;
+      font-size: 25px;
+      letter-spacing: -.04em;
+    }
+
+    .content p, .detail p, .selected p, .event p, .right p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.58;
+      margin: 0 0 18px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 26px 0;
+    }
+
+    .card {
+      min-height: 122px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      padding: 14px;
+    }
+
+    .icon {
+      color: var(--blue);
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+
+    .card b {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .section-title {
+      color: var(--blue);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-top: 20px;
+    }
+
+    .right {
+      border-left: 1px solid var(--line2);
+      background: #090d13;
+      padding: 24px 18px;
+      overflow: auto;
+    }
+
+    .right h3 {
+      margin: 0 0 20px;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .step {
+      position: relative;
+      padding-left: 18px;
+      padding-bottom: 23px;
+    }
+
+    .step:before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: 3px;
+      width: 9px;
+      height: 9px;
+      border: 1px solid var(--blue);
+      border-radius: 50%;
+      background: var(--panel);
+    }
+
+    .step b {
+      display: block;
+      font-size: 12px;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .map-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr 300px;
+      height: calc(100vh - 172px);
+      min-height: 560px;
+    }
+
+    .map-canvas {
+      position: relative;
+      padding: 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(109,162,255,.08), transparent 42%);
+    }
+
+    .map-title {
+      position: absolute;
+      left: 32px;
+      top: 28px;
+    }
+
+    .map-title b {
+      display: block;
+      font-size: 18px;
+      text-transform: uppercase;
+    }
+
+    .map-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .node {
+      position: absolute;
+      width: 185px;
+      min-height: 82px;
+      border: 1px solid var(--line2);
+      background: var(--panel2);
+      padding: 14px;
+      box-shadow: 0 18px 70px rgba(0,0,0,.28);
+    }
+
+    .node b {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .node.blue { border-color: rgba(109,162,255,.45); }
+    .node.orange { border-color: rgba(255,159,104,.55); }
+    .node.green { border-color: rgba(126,231,135,.55); }
+    .node.purple { border-color: rgba(192,153,255,.55); }
+
+    .node.n1 { left: 80px; top: 128px; }
+    .node.n2 { left: 330px; top: 128px; }
+    .node.n3 { right: 110px; top: 118px; }
+    .node.n4 { left: 210px; top: 310px; }
+    .node.n5 { right: 220px; top: 300px; }
+    .node.n6 { left: 430px; bottom: 70px; }
+
+    .edge {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line2), transparent);
+      transform-origin: left center;
+    }
+
+    .e1 { left: 265px; top: 170px; width: 95px; }
+    .e2 { left: 515px; top: 170px; width: 155px; }
+    .e3 { left: 270px; top: 255px; width: 135px; transform: rotate(36deg); }
+    .e4 { right: 315px; top: 252px; width: 125px; transform: rotate(125deg); }
+    .e5 { left: 410px; bottom: 198px; width: 160px; transform: rotate(38deg); }
+
+    .detail, .selected, .related {
+      border-left: 1px solid var(--line);
+      background: #090d13;
+      padding: 28px 20px;
+      overflow: auto;
+    }
+
+    .detail h4 {
+      margin: 0 0 10px;
+      text-transform: uppercase;
+      font-size: 16px;
+    }
+
+    .detail li {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+
+    .threads-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr 300px;
+      height: calc(100vh - 172px);
+      min-height: 560px;
+    }
+
+    .line-list {
+      padding: 20px;
+      border-right: 1px solid var(--line);
+      background: #090d13;
+      overflow: auto;
+    }
+
+    .line-item {
+      padding: 11px 0 11px 14px;
+      border-left: 2px solid var(--line);
+      margin-bottom: 10px;
+    }
+
+    .line-item.active { border-color: var(--blue); }
+    .line-item.green { border-color: var(--green); }
+    .line-item.orange { border-color: var(--orange); }
+    .line-item.purple { border-color: var(--purple); }
+
+    .line-item b {
+      display: block;
+      font-size: 13px;
+    }
+
+    .line-item span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .thread-main {
+      padding: 34px;
+      overflow: auto;
+    }
+
+    .thread-main h2 {
+      font-size: clamp(40px, 5vw, 72px);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin: 28px 0;
+    }
+
+    .metrics div {
+      padding: 16px 12px;
+      border-right: 1px solid var(--line);
+    }
+
+    .metrics b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .metrics span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .thread-axis {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--line2);
+      margin: 42px 0;
+      padding-top: 18px;
+    }
+
+    .thread-axis div {
+      position: relative;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .thread-axis div:before {
+      content: "";
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 1px solid var(--blue);
+    }
+
+    .key-nodes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .key-nodes div {
+      min-height: 100px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .selected small, .event small {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 10px;
+    }
+
+    .selected h3 {
+      margin: 14px 0;
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .timeline-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr 310px;
+      height: calc(100vh - 172px);
+      min-height: 560px;
+    }
+
+    .timeline-main {
+      padding: 34px;
+      overflow: auto;
+    }
+
+    .time-axis {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--line2);
+      margin: 66px 0 48px;
+      padding-top: 22px;
+    }
+
+    .time-axis div {
+      position: relative;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .time-axis div:before {
+      content: "";
+      position: absolute;
+      top: -28px;
+      left: 0;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--panel);
+      border: 1px solid var(--blue);
+    }
+
+    .time-axis .hot:before {
+      border-color: var(--orange);
+      box-shadow: 0 0 18px rgba(255,159,104,.7);
+    }
+
+    .event {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      padding: 24px;
+    }
+
+    .event h3 {
+      font-size: 28px;
+      margin: 10px 0 14px;
+    }
+
+    .related-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .related-card b {
+      display: block;
+      font-size: 13px;
+    }
+
+    .related-card span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .finish-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      height: calc(100vh - 172px);
+      min-height: 560px;
+    }
+
+    .finish-main {
+      padding: 44px;
+      overflow: auto;
+    }
+
+    .finish-main h2 {
+      font-size: clamp(42px, 5vw, 76px);
+      max-width: 980px;
+    }
+
+    .action-list {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 34px;
+    }
+
+    .action-list div {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      padding: 16px;
+      min-height: 120px;
+    }
+
+    .action-list b {
+      display: block;
+      color: var(--blue);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .action-list span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .finish-side {
+      border-left: 1px solid var(--line);
+      background: #090d13;
+      padding: 28px;
+    }
+
+    .status-card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .status-card small {
+      display: block;
+      color: var(--faint);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 8px;
+    }
+
+    .status-card b {
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    @media (max-width: 1200px) {
+      body { overflow: auto; }
+      .page { height: auto; }
+      .mode-note { display: none; }
+      .stagebar { grid-template-columns: 1fr; }
+      .controls { border-left: 0; border-top: 1px solid var(--line); }
+      .chrome, .map-layout, .threads-layout, .timeline-layout, .finish-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .cards, .key-nodes, .action-list { grid-template-columns: repeat(2, 1fr); }
+      .right, .detail, .selected, .related, .finish-side, .sidebar, .line-list {
+        border: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>Фокус-траектория мысли</h1>
+        <p>Одна база смыслов. Один экран за раз. Сначала смысл, потом связи, потом линии, потом время, потом действие.</p>
+      </div>
+      <div class="mode-note">
+        HTML-артефакт понимания: не сайт, не витрина, а управляемый маршрут через смысл. Стрелки ← → работают.
+      </div>
+    </header>
+
+    <div class="stagebar">
+      <div class="stage-info">
+        <span class="stage-number" id="stageNumber">01 / 05</span>
+        <span class="stage-title" id="stageTitle">Вход в мысль</span>
+        <span class="stage-purpose" id="stagePurpose">сначала понять главный тезис без перегруза</span>
+      </div>
+      <div class="controls">
+        <button id="prevStage">← назад</button>
+        <button id="nextStage">дальше →</button>
+        <div class="dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <section class="stage active" data-title="Вход в мысль" data-purpose="сначала понять главный тезис без перегруза">
+      <div class="window-head">
+        <b>01 — Линия эволюции мысли</b>
+        <span>статья + боковая траектория</span>
+      </div>
+
+      <div class="chrome">
+        <aside class="sidebar">
+          <div class="mark"><div class="n">N</div><div><strong>Непрерывность</strong><small>система мышления</small></div></div>
+          <div class="search">⌕ Поиск&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⌘K</div>
+          <div class="nav-title">Структура мышления</div>
+          <div class="nav">
+            <div>Главная</div>
+            <div>Карта мышления</div>
+            <div>Законы</div>
+            <div>Траектории</div>
+            <div>Синтезы</div>
+            <div class="active">Статьи</div>
+            <div>Архив</div>
+          </div>
+          <div class="profile"><div class="orb"></div><div><b>Александр</b><span>личная 2026</span></div></div>
+        </aside>
+
+        <main class="content">
+          <div class="crumb">Статьи → 01. Кризис непрерывности</div>
+          <div class="date">27 мая 2026 · 04:00</div>
+          <h2>ИИ создаёт кризис непрерывности, а не кризис интеллекта</h2>
+          <p>Главный дефицит новой эпохи — не доступ к уму. Главный дефицит — способность человека удерживать внимание, направление и внутреннюю связность рядом с бесконечным интеллектом.</p>
+
+          <div class="cards">
+            <div class="card"><div class="icon">⌁</div><b>Сдвиг</b><span>Проблема сместилась с интеллекта на связность человека.</span></div>
+            <div class="card"><div class="icon">✺</div><b>Распад</b><span>Среда дробит внимание и ломает целостность мышления.</span></div>
+            <div class="card"><div class="icon">◎</div><b>Закон</b><span>Среда либо собирает человека, либо разбирает его.</span></div>
+            <div class="card"><div class="icon">↗</div><b>Решение</b><span>Нужна система, которая возвращает непрерывность.</span></div>
+          </div>
+
+          <div class="section-title">01 / главный сдвиг</div>
+          <p>Раньше человек страдал от нехватки знаний. Сейчас знания, ответы и генерация стали почти мгновенными. Но вместе с этим появилась новая слабость: можно иметь доступ к огромному интеллекту и при этом терять собственную линию мышления.</p>
+        </main>
+
+        <aside class="right">
+          <h3>Траектория мысли</h3>
+          <div class="step"><b>ИИ как инструмент</b><span>первые эксперименты и восторг</span></div>
+          <div class="step"><b>Память</b><span>понимание важности накопления</span></div>
+          <div class="step"><b>Автоматизация</b><span>делегирование и освобождение времени</span></div>
+          <div class="step"><b>Перегрузка</b><span>рост хаоса и распад непрерывности</span></div>
+          <div class="step"><b>SAFE CORE</b><span>создание ядра устойчивости</span></div>
+          <div class="step"><b>Непрерывность</b><span>возврат к себе рядом с ИИ</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="stage" data-title="Карта причин и связей" data-purpose="увидеть структуру: узлы, переломы, последствия">
+      <div class="window-head">
+        <b>02 — Карта траектории</b>
+        <span>узлы и связи</span>
+      </div>
+
+      <div class="map-layout">
+        <aside class="sidebar">
+          <div class="mark"><div class="n">N</div><div><strong>Непрерывность</strong><small>система мышления</small></div></div>
+          <div class="search">⌕ Поиск&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⌘K</div>
+          <div class="nav-title">Навигация</div>
+          <div class="nav">
+            <div>Главная</div>
+            <div>Карта мышления</div>
+            <div>Законы</div>
+            <div class="active">Траектории</div>
+            <div>Синтезы</div>
+            <div>Статьи</div>
+            <div>Архив</div>
+          </div>
+          <div class="profile"><div class="orb"></div><div><b>Александр</b><span>личная 2026</span></div></div>
+        </aside>
+
+        <div class="map-canvas">
+          <div class="map-title"><b>Карта траектории мысли</b><span>эволюция мышления и ключевые переломные точки</span></div>
+
+          <div class="node n1"><b>Хаос</b><span>информационный шум и распад фокуса</span></div>
+          <div class="node n2 blue"><b>Поиск инструментов</b><span>поиск систем и методов для порядка</span></div>
+          <div class="node n3"><b>Память</b><span>понимание важности накопления</span></div>
+          <div class="node n4"><b>Агенты</b><span>делегирование и рост возможностей</span></div>
+          <div class="node n5 orange"><b>Runaway incident</b><span>потеря контроля и кризис непрерывности</span></div>
+          <div class="node n6 green"><b>SAFE CORE</b><span>создание ядра устойчивости</span></div>
+
+          <i class="edge e1"></i><i class="edge e2"></i><i class="edge e3"></i><i class="edge e4"></i><i class="edge e5"></i>
+        </div>
+
+        <aside class="detail">
+          <h3>Выбранный узел</h3>
+          <h4>Runaway Incident</h4>
+          <p>Потеря контроля, кризис непрерывности. Точка перелома, когда рост возможностей привёл к распаду фокуса, контекста и ощущению потери себя.</p>
+          <ul>
+            <li>Инструменты усиливают хаос, если нет ядра.</li>
+            <li>Непрерывность важнее любой автоматизации.</li>
+            <li>Без траектории нет устойчивости.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="stage" data-title="Живые линии мышления" data-purpose="увидеть, какие направления продолжают развиваться">
+      <div class="window-head">
+        <b>03 — Living threads</b>
+        <span>живые линии мышления</span>
+      </div>
+
+      <div class="threads-layout">
+        <aside class="line-list">
+          <div class="nav-title">Линии мышления</div>
+          <div class="line-item active"><b>continuity</b><span>Непрерывность · 12 узлов</span></div>
+          <div class="line-item green"><b>anti-chaos</b><span>Борьба с хаосом · 9 узлов</span></div>
+          <div class="line-item orange"><b>operator</b><span>Роль человека · 11 узлов</span></div>
+          <div class="line-item purple"><b>trajectory</b><span>Проектный путь · 8 узлов</span></div>
+          <div class="line-item"><b>synthesis</b><span>Связи и закономерности · 10 узлов</span></div>
+          <div class="line-item"><b>cognition</b><span>Природа мышления · 7 узлов</span></div>
+          <div class="profile"><div class="orb"></div><div><b>Александр</b><span>личная 2026</span></div></div>
+        </aside>
+
+        <main class="thread-main">
+          <div class="crumb">Линии → continuity</div>
+          <h2>continuity</h2>
+          <p>Непрерывность мышления как главный актив.</p>
+
+          <div class="metrics">
+            <div><b>12 узлов</b><span>в линии</span></div>
+            <div><b>27 статей</b><span>связано</span></div>
+            <div><b>5 законов</b><span>выведено</span></div>
+            <div><b>2025–2026</b><span>период</span></div>
+          </div>
+
+          <div class="thread-axis">
+            <div>Начало<br>май 2025</div>
+            <div>Осознание<br>июль 2025</div>
+            <div>Кризис<br>август 2025</div>
+            <div>Ядро<br>сентябрь 2025</div>
+            <div>Интеграция<br>2026</div>
+          </div>
+
+          <div class="key-nodes">
+            <div>Кризис непрерывности<br><small>Статья</small></div>
+            <div>Закон повторяемости<br><small>Закон</small></div>
+            <div>SAFE CORE<br><small>Синтез</small></div>
+            <div>Человек-оператор<br><small>Статья</small></div>
+          </div>
+        </main>
+
+        <aside class="selected">
+          <small>Выбранный узел</small>
+          <h3>Кризис непрерывности</h3>
+          <p>Точка осознания главной проблемы новой эпохи. Переход от множества линий к проблеме связности.</p>
+          <p><b>Связи:</b><br>anti-chaos<br>operator<br>trajectory</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="stage" data-title="Временная траектория" data-purpose="понять развитие мысли во времени">
+      <div class="window-head">
+        <b>04 — Timeline trajectory</b>
+        <span>временная линия</span>
+      </div>
+
+      <div class="timeline-layout">
+        <aside class="sidebar">
+          <div class="mark"><div class="n">N</div><div><strong>Непрерывность</strong><small>система мышления</small></div></div>
+          <div class="search">⌕ Поиск&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⌘K</div>
+          <div class="nav-title">Навигация</div>
+          <div class="nav">
+            <div>Главная</div>
+            <div>Карта мышления</div>
+            <div>Законы</div>
+            <div class="active">Траектории</div>
+            <div>Синтезы</div>
+            <div>Статьи</div>
+            <div>Архив</div>
+          </div>
+        </aside>
+
+        <main class="timeline-main">
+          <div class="crumb">Временная траектория</div>
+          <div class="time-axis">
+            <div>Май 2025<br>первые шаги</div>
+            <div>Июнь 2025<br>память</div>
+            <div>Июль 2025<br>рост</div>
+            <div class="hot">Август 2025<br>кризис</div>
+            <div>Сентябрь 2025<br>SAFE CORE</div>
+            <div>Ноябрь 2025<br>система</div>
+            <div>2026<br>непрерывность</div>
+          </div>
+
+          <div class="event">
+            <small>Событие перелома</small>
+            <h3>Runaway Incident</h3>
+            <p>Точка, когда рост инструментов и возможностей обернулся потерей фокуса, распадом контекста и ощущением потери себя.</p>
+            <p>Вывод: инструменты усиливают хаос без внутренней системы. Нужна не мощность, а управляемая среда.</p>
+          </div>
+        </main>
+
+        <aside class="related">
+          <div class="nav-title">Связанные материалы</div>
+          <div class="related-card"><b>01. Кризис непрерывности</b><span>Статья</span></div>
+          <div class="related-card"><b>04. Закон повторяемости</b><span>Закон</span></div>
+          <div class="related-card"><b>SAFE CORE</b><span>Синтез</span></div>
+          <div class="related-card"><b>Человек-оператор</b><span>Статья</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="stage" data-title="Следующее действие" data-purpose="закрыть просмотр превращением смысла в актив">
+      <div class="window-head">
+        <b>05 — Замыкание цикла</b>
+        <span>не просмотр, а действие</span>
+      </div>
+
+      <div class="finish-layout">
+        <main class="finish-main">
+          <div class="date">27 мая 2026 · 04:00</div>
+          <h2>Если мысль не стала активом, интерфейс был просто красивой паузой.</h2>
+          <p>Финальный экран нужен не для красоты. Он заставляет закрыть цикл: что зафиксировать, куда положить, с чем связать и что сделать дальше.</p>
+
+          <div class="action-list">
+            <div><b>01</b><span>Создать статью о кризисе непрерывности.</span></div>
+            <div><b>02</b><span>Добавить закон среды в папку законов.</span></div>
+            <div><b>03</b><span>Связать статью с картой смыслов.</span></div>
+            <div><b>04</b><span>Добавить линию “непрерывность” в живые линии.</span></div>
+            <div><b>05</b><span>Остановить дизайн и перейти к первой записи.</span></div>
+          </div>
+        </main>
+
+        <aside class="finish-side">
+          <div class="status-card"><small>статус</small><b>маршрут пройден</b></div>
+          <div class="status-card"><small>главный закон</small><b>среда либо собирает, либо разбирает</b></div>
+          <div class="status-card"><small>критерий</small><b>следующий цикл должен быть сильнее текущего</b></div>
+          <div class="status-card"><small>запрет</small><b>не полировать интерфейс вместо создания актива</b></div>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const stages = Array.from(document.querySelectorAll('.stage'));
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const number = document.getElementById('stageNumber');
+    const title = document.getElementById('stageTitle');
+    const purpose = document.getElementById('stagePurpose');
+    const prev = document.getElementById('prevStage');
+    const next = document.getElementById('nextStage');
+
+    let current = 0;
+
+    function showStage(index) {
+      current = (index + stages.length) % stages.length;
+
+      stages.forEach((stage, i) => {
+        stage.classList.toggle('active', i === current);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === current);
+      });
+
+      number.textContent = String(current + 1).padStart(2, '0') + ' / 05';
+      title.textContent = stages[current].dataset.title;
+      purpose.textContent = stages[current].dataset.purpose;
+    }
+
+    prev.addEventListener('click', () => showStage(current - 1));
+    next.addEventListener('click', () => showStage(current + 1));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') showStage(current + 1);
+      if (event.key === 'ArrowLeft') showStage(current - 1);
+    });
+  </script>
+</body>
+</html>

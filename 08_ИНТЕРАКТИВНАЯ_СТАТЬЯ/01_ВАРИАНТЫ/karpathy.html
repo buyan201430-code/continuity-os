@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ИИ-ОС / Карпатый режим</title>
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --panel: #14171c;
+      --panel2: #191d24;
+      --text: #e8eaed;
+      --muted: #8b949e;
+      --line: #2a3038;
+      --accent: #9db7ff;
+      --green: #7ee787;
+      --orange: #ffb86b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px minmax(520px, 1fr) 320px;
+      min-height: 100vh;
+    }
+
+    aside, main, .right {
+      padding: 24px;
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: #0a0c0f;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .right {
+      border-left: 1px solid var(--line);
+      background: #0a0c0f;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .logo {
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 28px;
+    }
+
+    .logo b {
+      display: block;
+      color: var(--text);
+      font-size: 18px;
+      letter-spacing: 0;
+      text-transform: none;
+      margin-top: 6px;
+    }
+
+    nav a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      font-size: 14px;
+    }
+
+    nav a.active {
+      color: var(--accent);
+    }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .date {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 52px;
+      line-height: .96;
+      letter-spacing: -.055em;
+      margin: 0 0 24px;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.45;
+      margin-bottom: 42px;
+    }
+
+    section {
+      border-top: 1px solid var(--line);
+      padding: 28px 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 25px;
+      letter-spacing: -.035em;
+    }
+
+    p {
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+
+    .law {
+      padding: 20px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      margin: 22px 0;
+    }
+
+    .law span {
+      color: var(--orange);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .law strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.15;
+      margin-top: 8px;
+    }
+
+    .loop {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .loop div {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .loop b {
+      display: block;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .map {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .map div {
+      border-left: 3px solid var(--line);
+      padding: 10px 14px;
+      background: rgba(255,255,255,.025);
+      color: var(--muted);
+    }
+
+    .map b {
+      color: var(--text);
+    }
+
+    .state-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .state-card small {
+      display: block;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .11em;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .state-card b {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .state-card ol {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .state-card li {
+      margin: 8px 0;
+    }
+
+    .status {
+      color: var(--green);
+    }
+
+    code {
+      color: var(--accent);
+      background: rgba(157,183,255,.08);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1100px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      aside, .right {
+        position: relative;
+        height: auto;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .loop {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 38px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <aside>
+      <div class="logo">
+        ИИ-ОС / v1.3 concept
+        <b>Карпатый режим</b>
+      </div>
+
+      <nav>
+        <a class="active" href="#core">00 / Ядро</a>
+        <a href="#problem">01 / Проблема</a>
+        <a href="#law">02 / Закон</a>
+        <a href="#loop">03 / Цикл</a>
+        <a href="#map">04 / Карта</a>
+        <a href="#action">05 / Действие</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="date">2026-05-27 / 03:51</div>
+
+      <h1 id="core">ИИ-ОС как среда непрерывности мышления</h1>
+
+      <p class="lead">
+        Не сайт. Не панель. Не красивый экран ради ощущения важности.
+        Это локальная исследовательская оболочка, где мысль проходит путь:
+        захват → сжатие → связь → память → действие.
+      </p>
+
+      <section id="problem">
+        <h2>01 / Главная проблема</h2>
+        <p>
+          ИИ не создаёт дефицит интеллекта. Интеллекта становится слишком много.
+          Главная проблема — удержать человека собранным рядом с бесконечным потоком
+          ответов, идей, инструментов и направлений.
+        </p>
+        <p>
+          Без среды ИИ ускоряет не мышление, а распад: больше вкладок, больше файлов,
+          больше идей, меньше траектории. Приятная современная пытка, только с автодополнением.
+        </p>
+      </section>
+
+      <section id="law">
+        <h2>02 / Главный закон</h2>
+
+        <div class="law">
+          <span>закон среды</span>
+          <strong>Среда либо собирает человека, либо разбирает его.</strong>
+        </div>
+
+        <p>
+          Интерфейс, память, язык, папки, ритмы работы, уведомления и ИИ формируют мышление.
+          Поэтому ИИ-ОС начинается не с агентов, а с управляемой среды.
+        </p>
+      </section>
+
+      <section id="loop">
+        <h2>03 / Минимальный цикл</h2>
+        <p>
+          Если мысль не проходит через этот цикл, она остаётся шумом.
+        </p>
+
+        <div class="loop">
+          <div><b>1. Мысль</b>что появилось</div>
+          <div><b>2. Захват</b>где зафиксировано</div>
+          <div><b>3. Синтез</b>что это значит</div>
+          <div><b>4. Память</b>куда положено</div>
+          <div><b>5. Действие</b>что меняется завтра</div>
+        </div>
+      </section>
+
+      <section id="map">
+        <h2>04 / Карта смысла</h2>
+
+        <div class="map">
+          <div><b>Хаос:</b> слишком много входящих мыслей и направлений.</div>
+          <div><b>Риск:</b> ИИ усиливает скорость, но не гарантирует связность.</div>
+          <div><b>Ядро:</b> законы, ограничения, ручной контур, запрет расширения.</div>
+          <div><b>Среда:</b> папки, статьи, карта смыслов, линия мышления, интерфейс.</div>
+          <div><b>Критерий:</b> следующий цикл должен быть сильнее текущего.</div>
+        </div>
+      </section>
+
+      <section id="action">
+        <h2>05 / Следующее действие</h2>
+        <p>
+          Не улучшать оболочку до идеала. Проверить её на одном реальном материале:
+          <code>кризис непрерывности рядом с бесконечным интеллектом</code>.
+        </p>
+      </section>
+    </main>
+
+    <div class="right">
+      <div class="state-card">
+        <small>статус</small>
+        <b class="status">рабочий концепт</b>
+      </div>
+
+      <div class="state-card">
+        <small>запрет</small>
+        <b>не полировать дизайн дольше 20 минут</b>
+      </div>
+
+      <div class="state-card">
+        <small>следующий цикл</small>
+        <ol>
+          <li>создать статью</li>
+          <li>создать закон</li>
+          <li>связать с картой</li>
+          <li>зафиксировать вывод</li>
+          <li>остановить расширение</li>
+        </ol>
+      </div>
+
+      <div class="state-card">
+        <small>проверка</small>
+        <p>
+          За 2 минуты должно быть понятно:
+          что за проблема, какой закон, какой цикл, какое действие.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
