@@ -864,5 +864,156 @@ div[style*="background: #000"] {
 </div>
 </div>
 
+
+<style>
+/* FINAL EDITORIAL OVERRIDE */
+body{
+  background:#f3f3f1 !important;
+  color:#111 !important;
+}
+
+h1{
+  letter-spacing:-0.07em !important;
+}
+
+.final-hit{
+  margin:56px 0 !important;
+  padding:4px 0 4px 26px !important;
+  border-left:2px solid #111 !important;
+  background:transparent !important;
+  color:#111 !important;
+  box-shadow:none !important;
+}
+
+.final-hit strong{
+  display:block !important;
+  max-width:760px !important;
+  font-size:28px !important;
+  line-height:1.18 !important;
+  letter-spacing:-0.035em !important;
+  margin-bottom:10px !important;
+  color:#111 !important;
+}
+
+.final-hit span{
+  display:block !important;
+  max-width:720px !important;
+  font-size:18px !important;
+  line-height:1.5 !important;
+  color:#555 !important;
+}
+
+.final-related{
+  margin:92px 0 20px !important;
+  padding-top:38px !important;
+  border-top:1px solid #d8d8d4 !important;
+  background:transparent !important;
+}
+
+.final-related h2{
+  margin:0 0 22px !important;
+  font-size:30px !important;
+  letter-spacing:-0.04em !important;
+}
+
+.final-related p{
+  max-width:720px !important;
+  color:#555 !important;
+}
+
+.final-related a{
+  display:block !important;
+  padding:18px 0 !important;
+  border-bottom:1px solid #ddd !important;
+  text-decoration:none !important;
+  color:#111 !important;
+  font-size:24px !important;
+  font-weight:700 !important;
+  line-height:1.25 !important;
+  background:transparent !important;
+}
+
+.final-related a small{
+  display:block !important;
+  margin-top:6px !important;
+  color:#666 !important;
+  font-size:15px !important;
+  font-weight:400 !important;
+  line-height:1.45 !important;
+}
+
+.final-related a:hover{
+  opacity:.6 !important;
+}
+
+.links,
+.compact-links,
+.linkgrid,
+.linkbtn,
+.next-list,
+.next-link{
+  box-shadow:none !important;
+}
+
+@media(max-width:900px){
+  .final-hit strong{font-size:24px !important;}
+  .final-related a{font-size:21px !important;}
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  document.querySelectorAll("div, section").forEach(function(el){
+    const t = el.innerText || "";
+
+    if(t.includes("Скорость роста интеллекта становится") && !el.classList.contains("final-hit")){
+      el.className = "final-hit";
+      el.innerHTML = `
+        <strong>Скорость роста интеллекта становится выше скорости адаптации человека.</strong>
+        <span>Именно здесь рождается кризис непрерывности.</span>
+      `;
+    }
+
+    if(t.includes("Среда либо собирает человека") && !el.classList.contains("final-hit")){
+      el.className = "final-hit";
+      el.innerHTML = `
+        <strong>Среда либо собирает человека, либо разбирает его.</strong>
+        <span>ИИ-ОС нужна не как коллекция инструментов, а как инфраструктура непрерывности.</span>
+      `;
+    }
+  });
+
+  document.querySelectorAll("div, section").forEach(function(el){
+    const t = el.innerText || "";
+
+    if(t.includes("Связанные элементы системы")){
+      el.outerHTML = `
+        <section class="final-related">
+          <h2>Продолжить маршрут</h2>
+          <p>Эта статья не должна висеть отдельно. Она должна вести к другим слоям среды.</p>
+
+          <a href="закон_среды.html">
+            Закон среды
+            <small>среда либо собирает человека, либо разбирает его</small>
+          </a>
+
+          <a href="trajectory_focus_v2.html">
+            Фокус-траектория
+            <small>как удерживать направление мышления</small>
+          </a>
+
+          <a href="../../06_СТАТЬИ/2026-05-27_КРИЗИС_НЕПРЕРЫВНОСТИ_v2.md">
+            Исходный текст
+            <small>markdown-слой для редактирования и развития</small>
+          </a>
+        </section>
+      `;
+    }
+  });
+
+});
+</script>
+
 </body>
 </html>
