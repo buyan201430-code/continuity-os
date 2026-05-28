@@ -1778,5 +1778,45 @@ blockquote p{
       if (event.key === 'ArrowLeft') showStage(current - 1);
     });
   </script>
-</body>
+
+<style>
+/* FIX: left menu clickable links */
+.side-link-fix{
+  display:block;
+  color:inherit;
+  text-decoration:none;
+  padding:10px 8px;
+  border-radius:6px;
+}
+
+.side-link-fix:hover{
+  background:rgba(0,0,0,.05);
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  const map = {
+    "Главная": "../../../index.html",
+    "Карта мышления": "#",
+    "Законы": "закон_среды.html",
+    "Траектории": "trajectory_focus_v2.html",
+    "Синтезы": "#",
+    "Статьи": "кризис_непрерывности.html",
+    "Архив": "#"
+  };
+
+  document.querySelectorAll("div, span, li, button").forEach(function(el){
+    const text = (el.textContent || "").trim();
+    if(map[text] && !el.closest("a")){
+      const a = document.createElement("a");
+      a.href = map[text];
+      a.className = "side-link-fix";
+      a.textContent = text;
+      el.replaceWith(a);
+    }
+  });
+});
+</script>
+\n</body>
 </html>
