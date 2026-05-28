@@ -158,6 +158,112 @@ h1{
     .grid{grid-template-columns:1fr}
     .mainline h2{font-size:30px}
 }
+
+.entry-block{
+    margin:70px 0 40px;
+    padding:34px;
+    background:white;
+    border:1px solid #d8d8d8;
+}
+.eyebrow{
+    margin:0 0 12px;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:#777;
+}
+.entry-text{
+    max-width:760px;
+    font-size:24px;
+    line-height:1.35;
+    margin:14px 0;
+}
+.entry-meta{
+    color:#666;
+    font-size:17px;
+    margin-bottom:26px;
+}
+.entry-actions{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+.primary-action,.secondary-action{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:0 18px;
+    text-decoration:none;
+    font-weight:700;
+}
+.primary-action{
+    background:#111;
+    color:#fff;
+}
+.secondary-action{
+    border:1px solid #ccc;
+    color:#111;
+    background:#fff;
+}
+.reading-cards{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:16px;
+    margin:22px 0 52px;
+}
+.reading-card{
+    display:block;
+    min-height:220px;
+    padding:24px;
+    border:1px solid #d8d8d8;
+    background:white;
+    color:#111;
+    text-decoration:none;
+}
+.reading-card:hover{
+    background:#111;
+    color:white;
+}
+.reading-card.active{
+    background:#111;
+    color:#fff;
+    border-color:#111;
+}
+.reading-card .step{
+    display:block;
+    margin-bottom:28px;
+    font-size:14px;
+    opacity:.65;
+}
+.reading-card strong{
+    display:block;
+    font-size:22px;
+    line-height:1.15;
+    margin-bottom:14px;
+}
+.reading-card p{
+    margin:0 0 22px;
+    color:inherit;
+    opacity:.78;
+    line-height:1.45;
+}
+.reading-card em{
+    font-style:normal;
+    font-size:14px;
+    opacity:.7;
+}
+.check-block{
+    margin-top:20px;
+    padding:28px 0 0;
+    border-top:1px solid #d8d8d8;
+}
+@media(max-width:900px){
+    .reading-cards{grid-template-columns:1fr}
+    .entry-block{padding:24px}
+    .entry-text{font-size:20px}
+}
+
 </style>
 </head>
 <body>
@@ -216,28 +322,51 @@ h1{
 </div>
 
 <section class="section">
-    <h2>Маршрут чтения</h2>
-    <div class="route">
-        <a href="08_ИНТЕРАКТИВНАЯ_СТАТЬЯ/00_ГЛАВНОЕ/закон_среды.html">
-            1. Закон среды
-            <span>сначала фильтр</span>
+    <section class="entry-block">
+    <p class="eyebrow">короткий вход в систему</p>
+    <h2>Как пользоваться этой средой</h2>
+    <p class="entry-text">
+        Это не сайт для просмотра. Это короткий маршрут, который помогает вернуться в свою линию мысли:
+        закон → статья → траектория → следующее действие.
+    </p>
+    <p class="entry-meta">
+        3 материала. 15 минут. Один результат: понять, собирает ли среда твоё внимание или снова распыляет его.
+    </p>
+    <div class="entry-actions">
+        <a class="primary-action" href="08_ИНТЕРАКТИВНАЯ_СТАТЬЯ/00_ГЛАВНОЕ/закон_среды.html">Начать маршрут</a>
+        <a class="secondary-action" href="#route">Смотреть все материалы</a>
+    </div>
+</section>
+
+<section class="section" id="route">
+    <h2>Маршрут понимания</h2>
+    <div class="reading-cards">
+        <a class="reading-card active" href="08_ИНТЕРАКТИВНАЯ_СТАТЬЯ/00_ГЛАВНОЕ/закон_среды.html">
+            <span class="step">01</span>
+            <strong>Закон среды</strong>
+            <p>Среда либо собирает человека, либо разбирает его.</p>
+            <em>Читать 4 мин</em>
         </a>
-        <a href="08_ИНТЕРАКТИВНАЯ_СТАТЬЯ/00_ГЛАВНОЕ/кризис_непрерывности.html">
-            2. Кризис непрерывности
-            <span>потом главный тезис</span>
+        <a class="reading-card" href="08_ИНТЕРАКТИВНАЯ_СТАТЬЯ/00_ГЛАВНОЕ/кризис_непрерывности.html">
+            <span class="step">02</span>
+            <strong>Кризис непрерывности</strong>
+            <p>Почему обычный чат, заметки и вкладки больше не удерживают человека рядом с ИИ.</p>
+            <em>Читать 6 мин</em>
         </a>
-        <a href="08_ИНТЕРАКТИВНАЯ_СТАТЬЯ/00_ГЛАВНОЕ/trajectory_focus_v2.html">
-            3. Фокус-траектория
-            <span>после этого маршрут</span>
+        <a class="reading-card" href="08_ИНТЕРАКТИВНАЯ_СТАТЬЯ/00_ГЛАВНОЕ/trajectory_focus_v2.html">
+            <span class="step">03</span>
+            <strong>Фокус-траектория</strong>
+            <p>Как вернуть направление: мысль → действие → актив → следующий цикл сильнее.</p>
+            <em>Читать 5 мин</em>
         </a>
     </div>
 </section>
 
-<section class="section">
-    <h2>Следующее действие</h2>
-    <p class="lead">
-        Не добавлять новый интерфейс. Не полировать дизайн.
-        Следующий шаг — проверить, удерживает ли эта среда состояние лучше обычного чата.
+<section class="check-block">
+    <h2>Что проверить после чтения</h2>
+    <p>
+        Не добавляй новый интерфейс. Проверь одну вещь: стало ли легче удерживать мысль
+        и видеть следующий шаг? Если нет — система ещё не работает.
     </p>
 </section>
 
